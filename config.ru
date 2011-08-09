@@ -1,0 +1,3 @@
+require 'yourapp'
+
+Sinatra.run

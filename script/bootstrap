@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# This script adapts the system for the needs of panda_cloud
+#
+# It is run on server creation and on each deploy. Therefor, each action should
+# be executable multiple times without impacting the system negatively.
+# -- [z]
+
+# exit on error
+set -e
+# show all commands
+#set -x
+
+if [ `id -u` -ne 0 ]; then
+  echo "Fail: this script must be run as root"
+  exit 1
+fi
+
+cd `dirname $0`
+
+# Get current distrib data (only on Ubuntu apparently)
+if [ -f /etc/lsb-release ]; then
+  . /etc/lsb-release
+fi
+
+force=${1:-}
+
+if [ "$DISTRIB_ID" != "Ubuntu" ]; then
+  echo "Sorry, this script only works on ubuntu !"
+  exit 1
+fi
+
+##### Util functions #####
+
+# $1: name
+# $2: version
+check_gem() {
+  name=$1
+  ver=$2
+  if [ "`gem list $name`" != "$name ($ver)" ] ; then
+    if gem list $name | grep $name > /dev/null ; then
+      gem uninstall $name -x -a -I || true
+    fi
+    gem install $name -v $ver
+  fi
+}
+
+check_debs() {
+  wanted_debs="$@"
+
+  installed_debs=`dpkg-query -l $wanted_debs | grep -e '^ii ' | cut -d ' ' -f 3 2>/dev/null`
+
+  missing_debs=`echo $wanted_debs $installed_debs | tr ' ' '\n' | sort | uniq -u`
+  if [ -n "$missing_debs" ]; then
+    apt-get install -qy $missing_debs
+  fi
+}
+
+##### Gogogo ! ######
+
+# Don't ... ask ... questions!
+export DEBIAN_FRONTEND='noninteractive'
+
+wget http://panda-apt.s3.amazonaws.com/panda.pub -O - | apt-key add -
+wget -c http://panda-apt.s3.amazonaws.com/sources/lucid/panda.list -P /etc/apt/sources.list.d/
+
+echo "*** Make sure the system is up-to-date ***"
+apt-get update -qq
+apt-get upgrade -qy
+
+echo "*** Install base packages ***"
+check_debs ruby-full ruby-dev rubygems curl git-core
+
+# Fix root on ubuntu AMIs
+if [ -f /home/ubuntu/.ssh/authorized_keys ]; then
+  mkdir -p /root/.ssh
+  chmod 700 /root/.ssh
+  cp /home/ubuntu/.ssh/authorized_keys /root/.ssh
+  chown -R root:root /root/.ssh
+fi
+
+# Fixes for the first deploy on ubuntu AMIs
+mkdir -p  /mnt/panda_cloud /mnt/panda_cloud/releases /mnt/panda_cloud/shared /mnt/panda_cloud/shared/system /mnt/panda_cloud/shared/log /mnt/panda_cloud/shared/pids
+chmod g+w /mnt/panda_cloud /mnt/panda_cloud/releases /mnt/panda_cloud/shared /mnt/panda_cloud/shared/system /mnt/panda_cloud/shared/log /mnt/panda_cloud/shared/pids
+mkdir -p /root/.cache/chef-cache
+
+# Fill /mnt instead of /
+# FIXME: isn't this done by chef already ?
+mkdir -p /mnt/tmp
+if ! [ -s /tmp ]; then
+  mv /tmp /mnt/tmp/private_root_tmp
+  ln -s /mnt/tmp/private_root_tmp /tmp
+fi
+
+echo "*** Install base rubygems ***"
+# Ensure rubygems doesn't install the docs
+echo gem: --no-ri --no-rdoc > /etc/gemrc
+check_gem bundler 1.0.15
+check_gem chef 0.10.2
+check_gem god 0.11.0
