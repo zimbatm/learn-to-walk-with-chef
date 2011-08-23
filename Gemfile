@@ -5,6 +5,7 @@ gem "activerecord"
 gem "thin"
 gem "rake"
 gem "pry"
+gem "mysql2"
 
 group :development do
   # Install VirtualBox 4.1+ first
