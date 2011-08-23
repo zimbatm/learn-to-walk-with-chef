@@ -13,7 +13,7 @@ end
 namespace :db do
   desc "aah, the migration!"
   task :migrate do
-    CreateTable.migrate(:up)
+    CreateTable.migrate(:up) unless Visit.table_exists?
   end
 end
 

@@ -25,13 +25,21 @@ namespace :deploy do
   end
 end
 
+namespace :db do
+  desc "Update the database schema"
+  task :migrate, :max_hosts => 1 do
+    run "cd #{release_path} && YOURAPP_ENV=#{stage} #{rake} db:migrate"
+  end
+  after "deploy:update", "db:migrate"
+end
+
 namespace :chef do
   desc "Prepares the target machine for chef"
   task :bootstrap do
     put File.read("script/bootstrap"), "last-bootstrap"
     sudo "sh last-bootstrap"
   end
-  before "deploy:setup", "chef:bootstrap"
+  before "deploy:update_code", "chef:bootstrap"
 
   desc "Applies the recipes to the target machine"
   task :chef_solo do

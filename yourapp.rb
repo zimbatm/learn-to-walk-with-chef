@@ -6,7 +6,7 @@ class Visit < ActiveRecord::Base
 end
 
 configure do
-  ActiveRecord::Base.establish_connection( COUNT_CONF["db"] )
+  ActiveRecord::Base.establish_connection( YOURAPP_CONF["db"] )
 end
 
 get '/?' do
