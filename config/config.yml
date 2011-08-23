@@ -1,5 +1,11 @@
 ---
 development:
+  db:
+    adapter: sqlite3
+    database: development.sqlite3
 
-production:
+staging:
+  db:
+    adapter: mysql2
+    database: yourapp
 

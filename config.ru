@@ -1,3 +1,5 @@
-require 'yourapp'
+load File.expand_path('../boot.rb', __FILE__)
 
-Sinatra.run
+require 'count'
+
+run Sinatra::Application

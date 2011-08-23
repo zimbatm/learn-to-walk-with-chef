@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script adapts the system for the needs of panda_cloud
+# This script adapts the system for the needs of yourapp
 #
 # It is run on server creation and on each deploy. Therefor, each action should
 # be executable multiple times without impacting the system negatively.
@@ -66,7 +66,6 @@ wget -c http://panda-apt.s3.amazonaws.com/sources/lucid/panda.list -P /etc/apt/s
 
 echo "*** Make sure the system is up-to-date ***"
 apt-get update -qq
-apt-get upgrade -qy
 
 echo "*** Install base packages ***"
 check_debs ruby-full ruby-dev rubygems curl git-core
@@ -80,21 +79,14 @@ if [ -f /home/ubuntu/.ssh/authorized_keys ]; then
 fi
 
 # Fixes for the first deploy on ubuntu AMIs
-mkdir -p  /mnt/panda_cloud /mnt/panda_cloud/releases /mnt/panda_cloud/shared /mnt/panda_cloud/shared/system /mnt/panda_cloud/shared/log /mnt/panda_cloud/shared/pids
-chmod g+w /mnt/panda_cloud /mnt/panda_cloud/releases /mnt/panda_cloud/shared /mnt/panda_cloud/shared/system /mnt/panda_cloud/shared/log /mnt/panda_cloud/shared/pids
+mkdir -p  /mnt/yourapp /mnt/yourapp/releases /mnt/yourapp/shared /mnt/yourapp/shared/system /mnt/yourapp/shared/log /mnt/yourapp/shared/pids
+chmod g+w /mnt/yourapp /mnt/yourapp/releases /mnt/yourapp/shared /mnt/yourapp/shared/system /mnt/yourapp/shared/log /mnt/yourapp/shared/pids
 mkdir -p /root/.cache/chef-cache
-
-# Fill /mnt instead of /
-# FIXME: isn't this done by chef already ?
-mkdir -p /mnt/tmp
-if ! [ -s /tmp ]; then
-  mv /tmp /mnt/tmp/private_root_tmp
-  ln -s /mnt/tmp/private_root_tmp /tmp
-fi
 
 echo "*** Install base rubygems ***"
 # Ensure rubygems doesn't install the docs
 echo gem: --no-ri --no-rdoc > /etc/gemrc
 check_gem bundler 1.0.15
 check_gem chef 0.10.2
+check_gem mysql 2.8.1
 check_gem god 0.11.0
