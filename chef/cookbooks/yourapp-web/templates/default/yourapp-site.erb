@@ -1,0 +1,17 @@
+upstream yourapp  {
+  server localhost:8080;
+}
+
+server {
+  listen   80;
+  server_name  <%= node[:hostname] %>;
+
+  access_log  <%= node[:nginx][:log_dir] %>/yourapp.access.log;
+
+  location / {
+    root   <%= node[:yourapp][:root] %>/public;
+    index  index.html index.htm;
+
+    proxy_pass  http://yourapp;
+  }
+}

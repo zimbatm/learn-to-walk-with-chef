@@ -12,10 +12,6 @@ apt_repository "panda" do
   action :add
 end
 
-# TODO: configure munin
-include_recipe "munin"
-
-
 include_recipe "motd-tail"
 # Too much data is not good
 file "/etc/update-motd.d/10-help-text" do
@@ -25,20 +21,19 @@ file "/etc/update-motd.d/51_update-motd" do
   action :delete
 end
 
-# sendmail to syslog mailer
-package "logmail"
 
 # Some nice to have utilities
+package "logmail" # sendmail to syslog mailer
 package "htop"
-
-
-package "libimage-exiftool-perl"
-
-# TODO: redirect syslog to syslog-server
-# TODO: configure logrotate
+package "iotop"
+package "vim-nox"
 
 # Setup bash aliases
 template "#{ENV['HOME']}/.bash_profile" do
   mode "0644"
   source "bash_profile.erb"
 end
+
+# Gem system dependencies
+include_recipe "mysql::client" # for mysql2 obviously
+

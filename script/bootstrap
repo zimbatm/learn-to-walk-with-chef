@@ -61,14 +61,16 @@ check_debs() {
 # Don't ... ask ... questions!
 export DEBIAN_FRONTEND='noninteractive'
 
-wget http://panda-apt.s3.amazonaws.com/panda.pub -O - | apt-key add -
-wget -c http://panda-apt.s3.amazonaws.com/sources/lucid/panda.list -P /etc/apt/sources.list.d/
+if ! [ -f /etc/apt/sources.list.d/panda.list ]; then
+  echo "*** Use the panda APT repository (for updated rubygems) ***"
+  wget http://panda-apt.s3.amazonaws.com/panda.pub -O - | apt-key add -
+  wget -c http://panda-apt.s3.amazonaws.com/sources/lucid/panda.list -P /etc/apt/sources.list.d/
 
-echo "*** Make sure the system is up-to-date ***"
-apt-get update -qq
+  apt-get update -qq
+fi
 
 echo "*** Install base packages ***"
-check_debs ruby-full ruby-dev rubygems curl git-core
+check_debs ruby-full ruby-dev rubygems curl git-core libmysqlclient-dev
 
 # Fix root on ubuntu AMIs
 if [ -f /home/ubuntu/.ssh/authorized_keys ]; then
@@ -78,15 +80,13 @@ if [ -f /home/ubuntu/.ssh/authorized_keys ]; then
   chown -R root:root /root/.ssh
 fi
 
-# Fixes for the first deploy on ubuntu AMIs
-mkdir -p  /mnt/yourapp /mnt/yourapp/releases /mnt/yourapp/shared /mnt/yourapp/shared/system /mnt/yourapp/shared/log /mnt/yourapp/shared/pids
-chmod g+w /mnt/yourapp /mnt/yourapp/releases /mnt/yourapp/shared /mnt/yourapp/shared/system /mnt/yourapp/shared/log /mnt/yourapp/shared/pids
-mkdir -p /root/.cache/chef-cache
+# FIXME
+chown -R vagrant:vagrant /u || true
 
 echo "*** Install base rubygems ***"
 # Ensure rubygems doesn't install the docs
 echo gem: --no-ri --no-rdoc > /etc/gemrc
-check_gem bundler 1.0.15
-check_gem chef 0.10.2
+check_gem bundler 1.0.18
+check_gem chef 0.10.4
 check_gem mysql 2.8.1
 check_gem god 0.11.0

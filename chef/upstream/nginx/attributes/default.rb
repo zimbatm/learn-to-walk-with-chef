@@ -2,10 +2,10 @@ default[:nginx][:version]      = "0.8.54"
 
 case platform
 when "debian","ubuntu"
-  set[:nginx][:dir]     = "/usr/local/conf"
+  set[:nginx][:dir]     = "/etc/nginx"
   set[:nginx][:log_dir] = "/var/log/nginx"
   set[:nginx][:user]    = "www-data"
-  set[:nginx][:binary]  = "/usr/local/sbin/nginx"
+  set[:nginx][:binary]  = "/usr/sbin/nginx"
 else
   set[:nginx][:dir]     = "/etc/nginx"
   set[:nginx][:log_dir] = "/var/log/nginx"

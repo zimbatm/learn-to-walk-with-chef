@@ -9,13 +9,11 @@ gem "mysql2"
 
 group :development do
   # Install VirtualBox 4.1+ first
-  gem "vagrant", "~> 0.8.2"
+  #gem "vagrant", "~> 0.8.2"
+
   gem "capistrano"
   gem "capistrano-ext"
-  gem "json"
+  gem "json" # to generate the chef config
 
   gem "sqlite3"
-
-  gem "god"
-  gem "chef"
 end

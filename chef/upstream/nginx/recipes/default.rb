@@ -18,8 +18,7 @@
 # limitations under the License.
 #
 
-# FIXME: upstream change. This should not go here.
-package "nginx-passenger"
+package "nginx"
 
 directory node[:nginx][:log_dir] do
   mode 0755
