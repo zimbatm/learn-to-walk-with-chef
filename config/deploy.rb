@@ -8,7 +8,9 @@ require 'bundler/capistrano'
 require 'json' # to generate the chef config
 
 set :scm, :git
-set :repository,  "git@github.com:zimbatm/learn-to-walk-with-chef.git"
+set :repository, "git@github.com:zimbatm/learn-to-walk-with-chef.git"
+set :deploy_via, :remote_cache
+ssh_options[:forward_agent] = true
 
 set :mysql_password, "something random"
 
@@ -24,7 +26,6 @@ namespace :deploy do
   task :restart, :roles => :web do
     run "thin reload"
   end
-
 end
 
 # Create the app's root_dir on every deploy
