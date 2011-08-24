@@ -1,7 +1,7 @@
 # vim: ft=ruby
 Vagrant::Config.run do |config|
-  config.vm.box = "lucid64"
-  config.vm.box_url = "http://files.vagrantup.com/lucid64.box"
+  config.vm.box = "lucid32"
+  config.vm.box_url = "http://files.vagrantup.com/lucid32.box"
 
   # In some cases, the DHCP doesn't come up
   # login as vagrant/vagrant and type `sudo dhclient eth0`
@@ -15,11 +15,14 @@ Vagrant::Config.run do |config|
     chef.roles_path = "chef/roles"
 
     chef.add_role "yourapp-web"
-    chef.add_role "yourapp-app"
     chef.add_role "yourapp-db"
 
     chef.json(
-      :yourapp => { :root => "/vagrant" }
+      :yourapp => {
+        :root => "/vagrant",
+        :stage => "development",
+        :mysql_password => "foobar"
+       }
     )
   end
 =end

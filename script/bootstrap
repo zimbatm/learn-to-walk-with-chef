@@ -63,14 +63,14 @@ export DEBIAN_FRONTEND='noninteractive'
 
 if ! [ -f /etc/apt/sources.list.d/panda.list ]; then
   echo "*** Use the panda APT repository (for updated rubygems) ***"
-  wget http://panda-apt.s3.amazonaws.com/panda.pub -O - | apt-key add -
-  wget -c http://panda-apt.s3.amazonaws.com/sources/lucid/panda.list -P /etc/apt/sources.list.d/
+  wget -nv http://panda-apt.s3.amazonaws.com/panda.pub -O - | apt-key add -
+  wget -nv -c http://panda-apt.s3.amazonaws.com/sources/lucid/panda.list -P /etc/apt/sources.list.d/
 
   apt-get update -qq
 fi
 
 echo "*** Install base packages ***"
-check_debs ruby-full ruby-dev rubygems curl git-core libmysqlclient-dev
+check_debs ruby-full ruby-dev rubygems curl git-core
 
 # Fix root on ubuntu AMIs
 if [ -f /home/ubuntu/.ssh/authorized_keys ]; then
@@ -88,5 +88,4 @@ echo "*** Install base rubygems ***"
 echo gem: --no-ri --no-rdoc > /etc/gemrc
 check_gem bundler 1.0.18
 check_gem chef 0.10.4
-check_gem mysql 2.8.1
 check_gem god 0.11.0

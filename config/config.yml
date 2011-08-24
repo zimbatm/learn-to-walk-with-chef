@@ -1,13 +1,13 @@
 ---
-#development:
-#  db:
-#    adapter: sqlite3
-#    database: development.sqlite3
-
 development:
   db:
-    adapter: mysql2
-    database: yourapp
-    username: yourapp
-    password: foobar
-    hostname: localhost
+    adapter: sqlite3
+    database: development.sqlite3
+
+#development:
+  #db:
+    #adapter: mysql2
+    #database: yourapp
+    #username: yourapp
+    #password: foobar
+    #hostname: localhost

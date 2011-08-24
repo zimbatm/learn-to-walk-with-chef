@@ -78,9 +78,7 @@ def chef_push_config(*roles)
     :yourapp => {
       :root => current_path,
       :stage => stage,
-      :mysql => {
-        :password => mysql_password
-      },
+      :mysql_password => mysql_password,
       :other_app_specific_value__or_not => 42
     },
     :run_list => roles.map{|r| "role[#{[application,r].join('-')}]"}

@@ -11,7 +11,7 @@ end
 
 mysql_database_user "yourapp" do
   connection mysql_connection_info
-  password node[:yourapp][:mysql][:password]
+  password node[:yourapp][:mysql_password]
   database_name "yourapp"
   #host '%'
   #privileges [:select, :update, :insert]
